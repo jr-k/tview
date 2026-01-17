@@ -1188,15 +1188,15 @@ func (t *Table) Draw(screen tcell.Screen) {
 
 			// Draw text.
 			finalWidth := columnWidth
-			if columnX+columnWidth >= width {
-				finalWidth = width - columnX
+			if columnX+1+columnWidth >= width {
+				finalWidth = width - columnX - 1
 			}
-			cell.x, cell.y, cell.width = x+columnX, y+rowY, finalWidth
-			style := cell.Style
-			if style == tcell.StyleDefault {
-				style = tcell.StyleDefault.Background(cell.BackgroundColor).Foreground(cell.Color).Attributes(cell.Attributes)
+			cell.x, cell.y, cell.width = x+columnX+1, y+rowY, finalWidth
+			_, printed, _ := printWithStyle(screen, cell.Text, x+columnX+1, y+rowY, 0, finalWidth, cell.Align, tcell.StyleDefault.Foreground(cell.Color).Attributes(cell.Attributes), true)
+			if TaggedStringWidth(cell.Text)-printed > 0 && printed > 0 {
+				_, _, style, _ := screen.GetContent(x+columnX+finalWidth, y+rowY)
+				printWithStyle(screen, string(SemigraphicsHorizontalEllipsis), x+columnX+finalWidth, 0, y+rowY, 1, AlignLeft, style, false)
 			}
-			printWithStyle(screen, cell.Text, x+columnX, y+rowY, 0, finalWidth, cell.Align, style, true)
 		}
 
 		// Draw bottom border.
